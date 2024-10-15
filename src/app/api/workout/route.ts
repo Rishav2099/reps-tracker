@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log("Request body:", body); // Log the request body to verify its structure
 
-    const { exercises, notes } = body;
+    const { exercises, notes, date } = body;
 
     if (!exercises || exercises.length === 0) {
       return NextResponse.json(
@@ -27,7 +27,8 @@ export async function POST(request: NextRequest) {
     const newWorkout = new Workout({
       userId,
       exercises,
-      notes: notes || "",
+      notes,
+      date
     });
 
     await newWorkout.save();

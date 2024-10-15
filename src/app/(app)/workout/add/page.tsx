@@ -14,13 +14,15 @@ interface Exercise {
 
 const WorkoutForm: React.FC = () => {
   const [exercises, setExercises] = useState<Exercise[]>([
-    { name: '', sets: 1, reps: 0, weight: 0, duration: 0 },
+    { name: '', sets: 1, reps: 1, weight: 0, duration: 0 },
   ]);
 
   const [loading, setLoading] = useState(false);
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [notes, setNotes] = useState('')
 
-  // Get the current date in YYYY-MM-DD format
-  const currentDate = new Date().toISOString().split('T')[0];
+
+  
 
   // Function to handle changes in the exercise fields
   const handleExerciseChange = (index: number, event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -32,7 +34,7 @@ const WorkoutForm: React.FC = () => {
 
   // Function to add a new exercise row
   const addExercise = () => {
-    setExercises([...exercises, { name: '', sets: 0, reps: 0, weight: 0, duration: 0 }]);
+    setExercises([...exercises, { name: '', sets: 1, reps: 1, weight: 0, duration: 0 }]);
   };
 
   // Function to remove an exercise row
@@ -41,19 +43,25 @@ const WorkoutForm: React.FC = () => {
     setExercises(newExercises);
   };
 
+  const handleDateChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setDate(e.target.value);
+  };
+
   // Function to handle form submission
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    // Get the notes value from the form
-    const notes = (e.target as HTMLFormElement).elements.namedItem('notes') as HTMLTextAreaElement;
+    
     const workoutData = {
       exercises,
-      notes: notes.value,
+      notes,
+      date
     };
 
     try {
+      console.log(date);
+      
       const res = await axios.post('/api/workout', workoutData, {
         headers: {
           'Content-Type': 'application/json',
@@ -103,7 +111,8 @@ const WorkoutForm: React.FC = () => {
             type="date"
             name="date"
             className="input input-bordered bg-gray-800 text-gray-100"
-            defaultValue={currentDate}
+            value={date}
+            onChange={handleDateChange}
             required
           />
         </div>
@@ -202,6 +211,8 @@ const WorkoutForm: React.FC = () => {
             name="notes"
             className="textarea textarea-bordered bg-gray-700 text-gray-100"
             placeholder="Any notes about this workout"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
           ></textarea>
         </div>
 
